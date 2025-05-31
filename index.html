@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mental Math Trainer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <h1>Welcome to Raphi's Mental Math Trainer</h1>
+    <label for="category">Choose a category:</label>
+    <select id="category" onchange="generateQuestion()">
+      <option value="multiplication">Multiplication</option>
+      <option value="division">Division</option>
+      <option value="percentages">Percentages</option>
+      <option value="growth">Growth & Change Over Time</option>
+      <option value="profitability">Profitability & Break-even Math</option>
+      <option value="ratios">Ratios & Proportions</option>
+      <option value="estimation">Estimation & Rounding</option>
+    </select>
+    <div id="question-box">
+      <p id="question">Loading question...</p>
+      <input type="number" id="answer" placeholder="Your answer">
+      <button onclick="checkAnswer()">Submit</button>
+      <p id="feedback"></p>
+    </div>
+    <div id="score-box">
+      <p>Score: <span id="score">0</span></p>
+    </div>
+    <p>Time to burn some mental math!</p>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
