@@ -8,30 +8,51 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <div id="menu-toggle">☰</div>
+
+<div id="side-menu" class="hidden">
+  <h3>Settings</h3>
+
+  <label for="category">Category:</label>
+  <select id="category" onchange="generateQuestion()">
+    <option value="multiplication">Multiplication</option>
+    <option value="division">Division</option>
+    <option value="percentages">Percentages</option>
+    <option value="growth">Growth & Change Over Time</option>
+    <option value="profitability">Profitability & Break-even Math</option>
+    <option value="ratios">Ratios & Proportions</option>
+    <option value="estimation">Estimation & Rounding</option>
+  </select>
+
+  <label for="difficulty" id="difficulty-label" style="display:none;">Difficulty:</label>
+  <select id="difficulty" style="display:none;">
+    <option value="easy">Kindergarten mode (±7%)</option>
+    <option value="medium">Wannabe mental math pro (±5%)</option>
+    <option value="hard">Highperformer (±2%)</option>
+  </select>
+
+  <label class="checkbox-label">
+  <input type="checkbox" id="enable-timer">
+  Enable timer (10s per question)
+  </label>
+
+  <label class="checkbox-label">
+    <input type="checkbox" id="interview-mode">
+    Interview Mode
+  </label>
+  <button id="reset-settings" onclick="resetSettings()">🔄 Reset Settings</button>
+</div>
+
   <div class="app">
     <h1>Welcome to Raphi's Mental Math Trainer</h1>
-    <label for="category">Choose a category:</label>
-    <select id="category" onchange="generateQuestion()">
-      <option value="multiplication">Multiplication</option>
-      <option value="division">Division</option>
-      <option value="percentages">Percentages</option>
-      <option value="growth">Growth & Change Over Time</option>
-      <option value="profitability">Profitability & Break-even Math</option>
-      <option value="ratios">Ratios & Proportions</option>
-      <option value="estimation">Estimation & Rounding</option>
-    </select>
-    <label for="difficulty" id="difficulty-label" style="display:none;">Choose difficulty:</label>
-    <select id="difficulty" style="display:none;">
-      <option value="easy">Mentally restricted mode (±7%)</option>
-      <option value="medium">Wannabe mental math pro (±5%)</option>
-      <option value="hard">Go outside - no practice needed (±2%)</option>
-    </select>
+  
     <div id="question-box">
       <canvas id="growthChart" width="400" height="200" style="display:none;"></canvas> 
       <p id="question">Loading question...</p>
       <input type="number" id="answer" placeholder="Your answer">
       <button onclick="checkAnswer()">Submit</button>
       <p id="feedback"></p>
+      <p id="timer">Time left: <span id="time-left">10</span>s</p>
     </div>
     <div id="score-box">
       <p>Score: <span id="score">0</span></p>

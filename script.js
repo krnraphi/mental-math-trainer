@@ -1,3 +1,6 @@
+let timer;
+let timeLeft = 10;
+
 let score = 0;
 let correctAnswer = 0;
 
@@ -14,8 +17,52 @@ document.getElementById("category").addEventListener("change", function() {
   }
 });
 
+function startTimer() {
+    clearInterval(timer);
+    timeLeft = 10;
+    document.getElementById("time-left").textContent = timeLeft;
+
+    timer = setInterval(() => {
+      timeLeft--;
+      document.getElementById("time-left").textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        document.getElementById("feedback").textContent = "⏰ Time's up!";
+        document.getElementById("score").textContent = score;
+        document.getElementById("answer").disabled = true;
+        document.querySelector("button").disabled = true;
+        setTimeout(generateQuestion, 1500);
+      }
+    }, 1000);
+  }
+
+document.getElementById("answer").disabled = true;
+document.querySelector("button").disabled = true;
+
+document.getElementById("enable-timer").addEventListener("change", function () {
+  const timerDisplay = document.getElementById("timer");
+  clearInterval(timer);  
+  
+  if (this.checked) {
+    timerDisplay.style.display = "block";
+    startTimer(); 
+  } else {
+    timerDisplay.style.display = "none";
+    clearInterval(timer); // Stop the timer if it's running
+  }
+});
+
 function generateQuestion() {
+
+  document.getElementById("answer").disabled = false;
+  document.querySelector("button").disabled = false;
+
   const category = document.getElementById("category").value;
+
+  // Always hide the chart unless explicitly shown later
+  document.getElementById('growthChart').style.display = 'none';
+
   let num1, num2;
  
   if (category === "multiplication") {
@@ -73,12 +120,30 @@ function generateQuestion() {
  
   document.getElementById("answer").value = "";
   document.getElementById("feedback").textContent = "";
+
+  const timerEnabled = document.getElementById("enable-timer");
+  if (timerEnabled && timerEnabled.checked) {
+      startTimer();
+  } else {
+      clearInterval(timer);
+      document.getElementById("time-left").textContent = "—";
+  }
 }
+
  
 function checkAnswer() {
+  clearInterval(timer);  
   const userAnswer = parseFloat(document.getElementById("answer").value);
   const category = document.getElementById("category").value;
+  const feedback = document.getElementById("feedback");
   let isCorrect = false;
+  let lowerBound, upperBound;
+
+  if (isNaN(userAnswer)) {
+    feedback.textContent = "⚠️ Please enter a valid number.";
+    feedback.className = "";
+    return;
+  }
 
   if (category === "growth") {
     const difficulty = document.getElementById("difficulty").value;
@@ -86,20 +151,33 @@ function checkAnswer() {
     if (difficulty === "easy") buffer = 7;
     else if (difficulty === "medium") buffer = 5;
     else buffer = 2;
-    isCorrect = Math.abs(userAnswer - correctAnswer) <= buffer;
+
+    lowerBound = correctAnswer - buffer;
+    upperBound = correctAnswer + buffer;
+    isCorrect = userAnswer >= lowerBound && userAnswer <= upperBound;
   } else {
     isCorrect = userAnswer === correctAnswer;
   }
 
   if (isCorrect) {
-    document.getElementById("feedback").textContent = "✅ Correct!";
+    if (category === "growth") {
+      feedback.textContent = `✅ Correct! Acceptable range: ${lowerBound}% to ${upperBound}%.`;
+    } else {    
+      feedback.textContent = `✅ Correct!`;
+    }
+    feedback.className = "correct";
     score++;
   } else {
-    document.getElementById("feedback").textContent = `❌ Incorrect. The correct answer was ${correctAnswer}.`;
+    if (category === "growth") {
+      feedback.textContent = `❌ Incorrect. The correct answer was ${correctAnswer}%. Acceptable range: ${lowerBound}% to ${upperBound}%.`;
+    } else {
+      feedback.textContent = `❌ Incorrect. The correct answer was ${correctAnswer}.`;
+    }
+    feedback.className = "incorrect";
   }
 
   document.getElementById("score").textContent = score;
-  setTimeout(generateQuestion, 1500);
+  setTimeout(generateQuestion, 2000);
 }
  
 window.onload = generateQuestion;
@@ -129,9 +207,9 @@ function generateGrowthChartQuestion() {
   console.log("startIdx:", startIdx, "endIdx:", endIdx);
 
   // Calculate the answer
-  correctAnswer = revenues[endIdx] - revenues[startIdx];
+  correctAnswer = Math.round(((revenues[endIdx] - revenues[startIdx]) / revenues[startIdx]) * 100);
   document.getElementById('question').textContent =
-  `What is the change in revenue from ${years[startIdx]} to ${years[endIdx]}?`;
+  `What is the percentage change in revenue from ${years[startIdx]} to ${years[endIdx]}?`;
   
   // Show the chart
   document.getElementById('growthChart').style.display = 'block';
@@ -154,7 +232,7 @@ function generateGrowthChartQuestion() {
         tension: 0.3
       }]
     },
-    options: {
+    options: { 
       plugins: {
         legend: { display: false }
       },
@@ -168,3 +246,25 @@ function generateGrowthChartQuestion() {
   document.getElementById('answer').value = '';
   document.getElementById('feedback').textContent = '';
 }
+
+document.getElementById("menu-toggle").addEventListener("click", function () {
+  const menu = document.getElementById("side-menu");
+  const app = document.querySelector(".app");
+  menu.classList.toggle("hidden");
+  app.classList.toggle("shifted");
+});
+
+function resetSettings() {
+    document.getElementById("category").value = "multiplication";
+    document.getElementById("difficulty").value = "easy";
+    document.getElementById("difficulty-label").style.display = "none";
+    document.getElementById("difficulty").style.display = "none";
+    document.getElementById("enable-timer").checked = false;
+    document.getElementById("interview-mode").checked = false;
+    document.getElementById("score").textContent = "0";
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("answer").value = "";
+    document.getElementById("time-left").textContent = "-";
+    generateQuestion();
+}
+
