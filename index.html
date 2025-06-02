@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mental Math Trainer</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="app">
@@ -19,7 +20,14 @@
       <option value="ratios">Ratios & Proportions</option>
       <option value="estimation">Estimation & Rounding</option>
     </select>
+    <label for="difficulty" id="difficulty-label" style="display:none;">Choose difficulty:</label>
+    <select id="difficulty" style="display:none;">
+      <option value="easy">Mentally restricted mode (±7%)</option>
+      <option value="medium">Wannabe mental math pro (±5%)</option>
+      <option value="hard">Go outside - no practice needed (±2%)</option>
+    </select>
     <div id="question-box">
+      <canvas id="growthChart" width="400" height="200" style="display:none;"></canvas> 
       <p id="question">Loading question...</p>
       <input type="number" id="answer" placeholder="Your answer">
       <button onclick="checkAnswer()">Submit</button>
